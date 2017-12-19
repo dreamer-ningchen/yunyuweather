@@ -12,6 +12,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.widget.AutoCompleteTextView.Validator;
 
 public class YunyuWeatherDB {
@@ -41,7 +42,7 @@ public class YunyuWeatherDB {
     		 ContentValues values = new ContentValues();
     		 values.put("province_name", province.getProvinceName());
     		 values.put("province_code", province.getPronvinceCode());
-    		 db.insert(DB_NAME, null, values);
+    		 db.insert("Province", null, values);
     	 }
     	 
      
@@ -51,7 +52,7 @@ public class YunyuWeatherDB {
      
      public List<Province> loadProvince(){
     	 List<Province> list = new ArrayList<Province>();
-    	 Cursor cursor = db.query(DB_NAME, null, null, null, null, null, null);
+    	 Cursor cursor = db.query("Province", null, null, null, null, null, null);
     	 if (cursor.moveToFirst()) {
 			do {
 				Province province = new Province();
@@ -72,7 +73,7 @@ public class YunyuWeatherDB {
 			values.put("city_name", city.getCityName());
 			values.put("city_code", city.getCityCode());
 			values.put("province_id", city.getProvinceId());
-			db.insert(DB_NAME, null, values);
+			db.insert("City", null, values);
 		}
      }
      
@@ -80,13 +81,14 @@ public class YunyuWeatherDB {
      
      public List<City> loadCity(int provinceId){
     	 List<City> list = new ArrayList<City>();
-    	 Cursor cursor = db.query(DB_NAME, null, "province_id=?", new String[]{String.valueOf(provinceId)}, null, null, null);
+    	 Cursor cursor = db.query("City", null, "province_id=?", new String[]{String.valueOf(provinceId)}, null, null, null);
     	 if (cursor.moveToFirst()) {
 			do {
 				City city = new City();
 				city.setId(cursor.getInt(cursor.getColumnIndex("id")));
 				city.setCityName(cursor.getString(cursor.getColumnIndex("city_name")));
 				city.setCityCode(cursor.getString(cursor.getColumnIndex("city_code")));
+				city.setProvinceId(provinceId);
 				list.add(city);
 			} while (cursor.moveToNext());									
 		}
@@ -101,7 +103,7 @@ public class YunyuWeatherDB {
 			values.put("country_name", country.getCountryName());
 			values.put("country_code", country.getCountryCode());
 			values.put("city_id", country.getCityId());
-			db.insert(DB_NAME, null, values);
+			db.insert("Country", null, values);
 		}
      }
      
@@ -109,7 +111,7 @@ public class YunyuWeatherDB {
      
      public List<Country> loadCountry(int cityId){
     	 List<Country> list = new ArrayList<Country>();
-    	 Cursor cursor = db.query(DB_NAME, null, "city_id = ?", new String[]{String.valueOf("cityId")}, null, null, null);
+    	 Cursor cursor = db.query("Country", null, "city_id=?", new String[] {String.valueOf(cityId)}, null, null, null);
     	 if (cursor.moveToFirst()) {
 			do {
 			   Country country = new Country();
@@ -120,6 +122,7 @@ public class YunyuWeatherDB {
 			   list.add(country);
 			} while (cursor.moveToNext());
 		}
+    	
     	 return list;
      }
 }

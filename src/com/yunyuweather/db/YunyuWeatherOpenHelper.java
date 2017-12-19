@@ -21,10 +21,10 @@ public class YunyuWeatherOpenHelper extends SQLiteOpenHelper {
 			/**
 			* County±ÌΩ®±Ì”Ôæ‰
 			*/
-			public static final String CREATE_COUNTY = "create table County ("
+			public static final String CREATE_COUNTRY = "create table Country ("
 			+ "id integer primary key autoincrement, "
-			+ "county_name text, "
-			+ "county_code text, "
+			+ "country_name text, "
+			+ "country_code text, "
 			+ "city_id integer)";
 	public YunyuWeatherOpenHelper(Context context, String name, CursorFactory factory, int version) {
 		super(context, name, factory, version);
@@ -35,7 +35,7 @@ public class YunyuWeatherOpenHelper extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		// TODO Auto-generated method stub
         db.execSQL(CREATE_PROVINCE);
-        db.execSQL(CREATE_COUNTY);
+        db.execSQL(CREATE_COUNTRY);
         db.execSQL(CREATE_CITY);
 	}
 
