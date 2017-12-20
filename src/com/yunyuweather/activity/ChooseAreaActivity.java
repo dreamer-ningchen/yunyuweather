@@ -14,7 +14,10 @@ import com.yunyuweather.util.Utility;
 import android.R;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -46,11 +49,21 @@ public class ChooseAreaActivity extends Activity {
       private City selectedCity;
       
       private int currentLevel;
+      
+      private boolean isFromWeatherActivity;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		isFromWeatherActivity = getIntent().getBooleanExtra("from_weather_activity", false);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		SharedPreferences prefs  = PreferenceManager.getDefaultSharedPreferences(this);
+		if (prefs.getBoolean("from_weather_activity", false)&&!isFromWeatherActivity) {
+			Intent intent = new Intent(this, WeatherActivity.class);
+			startActivity(intent);
+			finish();
+			return;
+		}
 		setContentView(com.example.yunyuweather.R.layout.choose_area);
 		listView = (ListView) findViewById(com.example.yunyuweather.R.id.list_view);
 		titleText = (TextView) findViewById(com.example.yunyuweather.R.id.title_text);
@@ -67,6 +80,12 @@ public class ChooseAreaActivity extends Activity {
 				}else if (currentLevel == LEVEL_CITY) {
 					selectedCity = cityList.get(index);
 					queryCountries();
+				}else if (currentLevel == LEVEL_COUNTRY) {
+					String countryCode = countryList.get(index).getCountryCode();
+					Intent intent = new Intent(ChooseAreaActivity.this, WeatherActivity.class);
+					intent.putExtra("country_code", countryCode);
+					startActivity(intent);
+				    finish();
 				}
 			}
 		});
@@ -130,7 +149,7 @@ public class ChooseAreaActivity extends Activity {
 		}else {
 			address = "http://www.weather.com.cn/data/list3/city.xml";
 		}
-        //showProgressDialog();
+        showProgressDialog();
         HttpUtil.sendHttpRequest(address, new HttpCallbackListener() {
 			@Override
 			public void onFinish(String response) {
@@ -195,6 +214,10 @@ public class ChooseAreaActivity extends Activity {
     	if (currentLevel == LEVEL_CITY) {
 			queryProvincies();
 		}else {
+			if (isFromWeatherActivity) {
+				Intent intent =  new Intent(this, WeatherActivity.class);
+				startActivity(intent);
+			}
 			finish();
 		}
     }
